@@ -1,0 +1,137 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>หนังสือผู้ใหญ่บ้าน บ้านผือ</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600&family=Sarabun:wght@400;600&display=swap">
+<style>
+/* Layout: one dark navy reading room — top bar, the book in the middle, thumbnails at the bottom. Single deliberate dark look. */
+:root{--bg:#0f1838;--panel:#16224a;--line:#2a3b72;--fg:#eef2fb;--muted:#a8b6d8;--gold:#D9B45A;--sky:#7FA0D6;--display:'Prompt',system-ui,sans-serif;--body:'Sarabun',system-ui,sans-serif;color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);display:flex;flex-direction:column;overflow:hidden;
+ background-image:linear-gradient(45deg,rgba(127,160,214,.05) 25%,transparent 25%,transparent 75%,rgba(127,160,214,.05) 75%),linear-gradient(45deg,rgba(127,160,214,.05) 25%,transparent 25%,transparent 75%,rgba(127,160,214,.05) 75%);background-size:64px 64px;background-position:0 0,32px 32px}
+header{background:var(--panel);border-bottom:2px solid var(--gold);padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:10px}
+.top{display:flex;align-items:center;gap:12px;min-width:0}
+.top img{width:42px;height:42px;border-radius:50%;background:#fff;flex:none}
+.ttl{min-width:0}
+.ttl h1{font:600 17px/1.3 var(--display);margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ttl .sec{font:500 13px var(--display);color:var(--gold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.styles{display:flex;gap:6px;margin-left:auto;flex:none}
+.styles button{font:500 13px var(--display);background:transparent;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+.styles button[aria-pressed=true]{background:var(--gold);color:#1B2A5E;border-color:var(--gold)}
+.bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.btn{background:#1f2e60;color:var(--fg);border:1px solid var(--line);border-radius:10px;height:38px;min-width:42px;padding:0 10px;font:500 14px var(--display);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn:hover{border-color:var(--sky)} .btn:focus-visible,.styles button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.btn.on{background:var(--gold);color:#1B2A5E;border-color:var(--gold)}
+.btn svg{width:18px;height:18px}
+.pg{display:flex;align-items:center;gap:6px;font:500 14px var(--display);color:var(--muted)}
+.pg input{width:58px;height:38px;border-radius:10px;border:1px solid var(--line);background:#0c1430;color:var(--fg);text-align:center;font:600 15px var(--display)}
+.spacer{flex:1}
+main{flex:1;min-height:0;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:14px max(16px,env(safe-area-inset-left,0px))}
+#book{box-shadow:0 18px 50px rgba(0,0,0,.45)}
+#book .page{background:#fff}
+#book .page img{width:100%;height:100%;display:block;object-fit:contain;background:#fff}
+footer{background:var(--panel);border-top:1px solid var(--line);padding-block:8px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.thumbs{display:flex;gap:8px;overflow-x:auto;scroll-behavior:smooth;padding-bottom:4px}
+.thumbs button{flex:none;width:58px;border:0;background:none;padding:0;cursor:pointer;color:var(--muted);font:500 11px var(--display)}
+.thumbs img{width:58px;height:82px;object-fit:cover;border-radius:4px;border:2px solid transparent;display:block;background:#fff}
+.thumbs button.cur img{border-color:var(--gold)} .thumbs button.cur{color:var(--gold)}
+footer[hidden]{display:none}
+.drawer{position:fixed;inset:0;background:rgba(5,10,30,.6);display:flex;z-index:20}
+.drawer .in{background:var(--panel);width:min(440px,92vw);height:100%;overflow:auto;padding:20px max(18px,env(safe-area-inset-left,0px)) 30px 18px;border-right:2px solid var(--gold)}
+.drawer h2{font:600 20px var(--display);margin:0 0 12px;color:var(--gold)}
+.toc a{display:flex;gap:10px;align-items:baseline;color:var(--fg);text-decoration:none;padding:7px 8px;border-radius:8px;font-size:15px;line-height:1.4}
+.toc a:hover{background:#22336b}
+.toc a.l1{font:600 15px var(--display);color:#fff;margin-top:6px}
+.toc a.l2{padding-left:22px;color:var(--muted)}
+.toc a span{flex:1;min-width:0} .toc a b{font:600 13px var(--display);color:var(--gold);font-variant-numeric:tabular-nums}
+.zoom{position:fixed;inset:0;background:rgba(5,10,30,.92);z-index:30;overflow:auto;display:flex;justify-content:center;padding:60px 16px 30px}
+.zoom img{width:min(1000px,100%);height:auto;background:#fff;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.zoom .x{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:max(16px,env(safe-area-inset-right,0px))}
+@media (max-width:640px){.styles button span{display:none}.ttl h1{font-size:15px}.hide-s{display:none}}
+@media (prefers-reduced-motion:reduce){.thumbs{scroll-behavior:auto}}
+</style>
+
+<header>
+  <div class="top">
+    <img src="seal.png" alt="ตรากรมการปกครอง">
+    <div class="ttl"><h1>เอกสารประกอบการประเมินผลงานผู้ใหญ่บ้าน ปี 2569</h1><div class="sec" id="sec">บ้านผือ หมู่ที่ 19 ตำบลพระลับ</div></div>
+    <div class="styles" role="group" aria-label="เลือกแบบหนังสือ" hidden>
+      <button id="sA" data-s="A">A<span> ราชการคลาสสิก</span></button>
+      <button id="sB" data-s="B">B<span> นิตยสาร</span></button>
+      <button id="sC" data-s="C">C<span> การ์ดอินโฟ</span></button>
+    </div>
+  </div>
+  <div class="bar">
+    <button class="btn" id="bToc" title="สารบัญ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg><span class="hide-s">สารบัญ</span></button>
+    <button class="btn" id="bFirst" title="หน้าแรก"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/></svg></button>
+    <button class="btn" id="bPrev" title="หน้าก่อน"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <div class="pg"><input id="pIn" inputmode="numeric" aria-label="ไปหน้า"><span id="pTot">/ 0</span></div>
+    <button class="btn" id="bNext" title="หน้าถัดไป"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+    <span class="spacer"></span>
+    <button class="btn" id="bZoom" title="ขยายหน้า"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3M11 8v6M8 11h6"/></svg></button>
+    <button class="btn" id="bPlay" title="เปิดอัตโนมัติ"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+    <button class="btn on" id="bSnd" title="เสียงพลิกหน้า"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5zM15.5 8.5a5 5 0 010 7M19 5a10 10 0 010 14"/></svg></button>
+    <button class="btn on" id="bThumb" title="รูปย่อ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="7" height="16" rx="1"/><rect x="14" y="4" width="7" height="16" rx="1"/></svg></button>
+  </div>
+</header>
+<main><div id="book"></div></main>
+<footer id="foot"><div class="thumbs" id="thumbs"></div></footer>
+<div class="drawer" id="drawer" hidden><div class="in"><h2>สารบัญ</h2><nav class="toc" id="toc"></nav></div></div>
+<div class="zoom" id="zoom" hidden><button class="btn x" id="zx">ปิด ✕</button><img id="zimg" alt="หน้าขยาย"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
+<script>
+const BOOKS={"C": {"n": 56, "toc": [[1, "คำนำ", 2], [1, "ส่วนที่ 1 ประวัติส่วนตัวและข้อมูลหมู่บ้าน", 4], [2, "1.1 ประวัติส่วนตัว", 5], [2, "1.2 ประวัติการศึกษา", 5], [2, "1.3 ข้อมูลหมู่บ้าน", 6], [2, "ทำเนียบคณะกรรมการหมู่บ้าน", 7], [1, "ส่วนที่ 2 ผลการปฏิบัติงานด้านการปฏิบัติหน้าที่ของผู้ใหญ่บ้าน", 8], [2, "2.1 ด้านรับฟังปัญหาและนำความเดือดร้อนของราษฎรไปแจ้งหน่วยงานที่เกี่ยวข้อง เพื่อให้ความช่วยเหลือ", 9], [2, "2.2 ด้านการแก้ไขปัญหาร้องทุกข์การไกล่เกลี่ยข้อพิพาท", 14], [2, "2.3 การรักษาความสงบเรียบร้อย การอำนวยความเป็นธรรม และการอำนวยความสะดวกในการปฏิบัติหน้าที่ของส่วนราชการ หน่วยงานของรัฐ หรือหน่วยงานอื่นๆ ในพื้นที่", 15], [2, "2.4 ด้านแก้ไขปัญหายาเสพติด", 19], [2, "2.5 ด้านการติดตามผลและให้ความช่วยเหลือผู้ติด ผู้เสพยาเสพติด ที่ผ่านการบำบัดฟื้นฟู เช่นการส่งเสริมอาชีพและหางานให้ทำ", 20], [2, "2.6 การจัดประชุมประจำเดือน", 21], [2, "2.7 ด้านวัฒนธรรมประเพณี", 23], [2, "2.8 พิธียกช่อฟ้าและแต่งตั้งสัญญาบัตรพระครูวัดตาลเรียง เจ้าคณะ ตำบลพระลับ", 27], [2, "2.9 กิจกรรมต่อต้านยาเสพติด เช่น กีฬาดนตรี To Be Number One", 27], [2, "2.10 ด้านสาธารณสุข", 29], [2, "2.11 ด้านประชาสัมพันธ์", 31], [2, "2.12 ด้านเศรษฐกิจพอเพียง", 32], [2, "2.13 ผลงานดีเด่นเป็นพิเศษอื่นๆ", 34], [1, "ส่วนที่ 3 ผลการปฏิบัติงานด้านคุณลักษณะความเป็นผู้นำของผู้ใหญ่บ้าน", 37], [2, "3.1 โครงการชุมชนบำบัดอย่างยั่งยืน", 38], [2, "3.2 โครงการขับเคลื่อนเครือข่ายการมีส่วนร่วม จาก กอ.รมน.", 38], [2, "3.3 นำกล่าวคำถวายพระพร", 39], [2, "3.4 โครงการจัดทำผังน้ำและแผนพัฒนาแหล่งน้ำระดับตำบล กลุ่มพื้นที่ภาคตะวันออกเฉียงเหนือ", 39], [2, "3.5 ประชุมหารือเกี่ยวกับโครงการชลประทานประตู D9", 40], [2, "3.6 ประชุมกรรมการแผนพัฒนาหมู่บ้าน", 41], [2, "3.7 ประชุมประชาคม โรงเรียนเทศบาลตำบลพระลับ", 41], [1, "บทสรุป", 42], [1, "ภาพกิจกรรมการปฏิบัติงานเพิ่มเติม", 43]]}};
+let S='A', pf=null, timer=null, snd=true, actx=null;
+const $=id=>document.getElementById(id);
+const pad=n=>String(n).padStart(3,'0');
+function sectionOf(p){let t='';for(const r of BOOKS[S].toc){if(r[2]&&r[2]<=p)t=r[1]}return t||'ปก'}
+function flipSound(){if(!snd)return;try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+  const len=actx.sampleRate*0.32,b=actx.createBuffer(1,len,actx.sampleRate),d=b.getChannelData(0);
+  for(let i=0;i<len;i++){const t=i/len;d[i]=(Math.random()*2-1)*Math.pow(1-t,2.2)*(t<0.08?t/0.08:1)*0.5}
+  const s=actx.createBufferSource();s.buffer=b;const f=actx.createBiquadFilter();f.type='bandpass';f.frequency.value=2400;f.Q.value=0.6;
+  s.connect(f).connect(actx.destination);s.start()}catch(e){}}
+function update(){const i=pf?pf.getCurrentPageIndex():0, n=BOOKS[S].n;
+  $('pIn').value=i+1;$('pTot').textContent='/ '+n;$('sec').textContent=sectionOf(i+1+((pf&&pf.getOrientation()==='landscape'&&i>0&&i+1<n)?1:0));
+  document.querySelectorAll('.thumbs button').forEach((b,k)=>{const on=k===i||(k===i+1&&pf&&pf.getOrientation()==='landscape'&&i>0);b.classList.toggle('cur',on);if(k===i)b.scrollIntoView({block:'nearest',inline:'center'})})}
+function sizeFor(){const m=document.querySelector('main');const h=Math.max(260,m.clientHeight-28), w=Math.max(220,m.clientWidth-32);
+  const portrait=w<760; const ph=Math.min(h,(portrait?w:w/2)*1.414);return {w:Math.round(ph/1.414),h:Math.round(ph),portrait}}
+function build(style){
+  S=style; try{localStorage.setItem('bk-style',S)}catch(e){}
+  
+  document.querySelectorAll('.styles button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.s===S));
+  stopPlay(); if(pf){pf.destroy();pf=null}
+  const holder=document.querySelector('main'); holder.innerHTML='<div id="book"></div>';
+  const n=BOOKS[S].n, imgs=[...Array(n)].map((_,i)=>`${S}/${pad(i+1)}.jpg`);
+  // thumbs
+  $('thumbs').innerHTML=imgs.map((s,i)=>`<button data-i="${i}" title="หน้า ${i+1}"><img loading="lazy" src="${s}" alt="">${i+1}</button>`).join('');
+  // toc
+  $('toc').innerHTML=BOOKS[S].toc.map(r=>`<a href="#${S.toLowerCase()}" class="l${r[0]}" data-p="${r[2]}"><span>${r[1]}</span><b>${r[2]}</b></a>`).join('');
+  const z=sizeFor();
+  pf=new St.PageFlip($('book'),{width:z.w,height:z.h,size:'fixed',showCover:true,usePortrait:true,maxShadowOpacity:.5,mobileScrollSupport:false,flippingTime:700});
+  pf.loadFromImages(imgs);
+  pf.on('flip',()=>{flipSound();update()}); pf.on('changeOrientation',update);
+  update();
+}
+function go(p){if(!pf)return;const n=BOOKS[S].n;p=Math.max(1,Math.min(n,p|0));pf.flip(p-1)}
+function stopPlay(){clearInterval(timer);timer=null;$('bPlay').classList.remove('on')}
+$('bPrev').onclick=()=>pf&&pf.flipPrev(); $('bNext').onclick=()=>pf&&pf.flipNext(); $('bFirst').onclick=()=>go(1);
+$('pIn').addEventListener('change',e=>go(+e.target.value));
+$('bPlay').onclick=()=>{if(timer){stopPlay();return}$('bPlay').classList.add('on');timer=setInterval(()=>{const i=pf.getCurrentPageIndex();if(i>=BOOKS[S].n-2)stopPlay();else pf.flipNext()},3500)};
+$('bSnd').onclick=()=>{snd=!snd;$('bSnd').classList.toggle('on',snd)};
+$('bThumb').onclick=()=>{const f=$('foot');f.hidden=!f.hidden;$('bThumb').classList.toggle('on',!f.hidden);setTimeout(()=>build(S),50)};
+$('bToc').onclick=()=>{$('drawer').hidden=false};
+$('drawer').onclick=e=>{if(e.target.id==='drawer')$('drawer').hidden=true};
+$('toc').onclick=e=>{const a=e.target.closest('a');if(!a)return;e.preventDefault();$('drawer').hidden=true;go(+a.dataset.p)};
+$('thumbs').onclick=e=>{const b=e.target.closest('button');if(b)go(+b.dataset.i+1)};
+$('bZoom').onclick=()=>{$('zimg').src=`${S}/${pad(pf.getCurrentPageIndex()+1)}.jpg`;$('zoom').hidden=false};
+$('zx').onclick=()=>{$('zoom').hidden=true};
+document.querySelectorAll('.styles button').forEach(b=>b.onclick=()=>build(b.dataset.s));
+document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;if(e.key==='ArrowRight')pf&&pf.flipNext();if(e.key==='ArrowLeft')pf&&pf.flipPrev();if(e.key==='Escape'){$('zoom').hidden=true;$('drawer').hidden=true}});
+let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{const i=pf?pf.getCurrentPageIndex():0;build(S);setTimeout(()=>pf&&pf.turnToPage(i),60)},250)});
+window.addEventListener('hashchange',()=>{const h=location.hash.slice(1).toUpperCase();if(BOOKS[h]&&h!==S)build(h)});
+let start=(location.hash.slice(1)||'').toUpperCase(); if(!BOOKS[start]){try{start=localStorage.getItem('bk-style')||'A'}catch(e){start='A'}}
+build('C');
+</script>
